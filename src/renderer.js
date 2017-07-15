@@ -23,8 +23,8 @@ Renderer.prototype.renderImage = function(container, bounds, borderData, imageCo
         0,
         imageContainer.image.width || width,
         imageContainer.image.height || height,
-        bounds.left + paddingLeft + borders[3].width,
-        bounds.top + paddingTop + borders[0].width,
+        parseInt(bounds.left + paddingLeft + borders[3].width),
+        parseInt(bounds.top + paddingTop + borders[0].width),
         width,
         height
     );

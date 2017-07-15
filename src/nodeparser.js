@@ -185,7 +185,18 @@ NodeParser.prototype.getPseudoElement = function(container, type) {
 NodeParser.prototype.getChildren = function(parentContainer) {
     return flatten([].filter.call(parentContainer.node.childNodes, renderableNode).map(function(node) {
         var container = [node.nodeType === Node.TEXT_NODE ? new TextContainer(node, parentContainer) : new NodeContainer(node, parentContainer)].filter(nonIgnoredElement);
-        return node.nodeType === Node.ELEMENT_NODE && container.length && node.tagName !== "TEXTAREA" ? (container[0].isElementVisible() ? container.concat(this.getChildren(container[0])) : []) : container;
+        if(container[0].node.shadowRoot){
+           var shadowElems = container[0].node.shadowRoot.querySelectorAll('*');
+          for(var i=0;i<shadowElems.length;i++){
+              if(shadowElems[i].parentNode === container[0].node.shadowRoot){
+                var shadowContainer = [new NodeContainer(shadowElems[i], parentContainer)].filter(nonIgnoredElement);
+                container = container.concat(NodeParser.prototype.getChildren(shadowContainer[0]));
+              }
+            }
+            return container;
+        }else{
+          return node.nodeType === Node.ELEMENT_NODE && container.length && node.tagName !== "TEXTAREA" ? (container[0] && container[0].isElementVisible() ? container.concat(this.getChildren(container[0])) : []) : container;
+        }
     }, this));
 };
 
@@ -204,6 +215,9 @@ NodeParser.prototype.createStackingContexts = function() {
         } else if (isElement(container) && ((isPositioned(container) && zIndex0(container)) || isInlineBlock(container) || isFloating(container))) {
             this.newStackingContext(container, false);
         } else {
+            if(!container.parent.stack) {
+              this.newStackingContext(container, false);
+            }
             container.assignStack(container.parent.stack);
         }
     }, this);

@@ -41,8 +41,10 @@ NodeContainer.prototype.getOpacity = function() {
 };
 
 NodeContainer.prototype.assignStack = function(stack) {
+  if(stack) {
     this.stack = stack;
     stack.children.push(this);
+  }
 };
 
 NodeContainer.prototype.isElementVisible = function() {

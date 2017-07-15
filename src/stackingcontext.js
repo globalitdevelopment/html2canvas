@@ -5,7 +5,7 @@ function StackingContext(hasOwnStacking, opacity, element, parent) {
     this.ownStacking = hasOwnStacking;
     this.contexts = [];
     this.children = [];
-    this.opacity = (this.parent ? this.parent.stack.opacity : 1) * opacity;
+    this.opacity = (this.parent && this.parent.stack ? this.parent.stack.opacity : 1) * opacity;
 }
 
 StackingContext.prototype = Object.create(NodeContainer.prototype);

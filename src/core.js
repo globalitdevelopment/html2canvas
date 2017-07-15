@@ -41,7 +41,7 @@ function html2canvas(nodeList, options) {
 
     var node = ((nodeList === undefined) ? [document.documentElement] : ((nodeList.length) ? nodeList : [nodeList]))[0];
     node.setAttribute(html2canvasNodeAttribute + index, index);
-    return renderDocument(node.ownerDocument, options, node.ownerDocument.defaultView.innerWidth, node.ownerDocument.defaultView.innerHeight, index).then(function(canvas) {
+    return renderDocument(node.ownerDocument, options, node.ownerDocument.defaultView.innerWidth, node.ownerDocument.defaultView.innerHeight, index, node).then(function(canvas) {
         if (typeof(options.onrendered) === "function") {
             log("options.onrendered is deprecated, html2canvas returns a Promise containing the canvas");
             options.onrendered(canvas);
@@ -67,14 +67,14 @@ if (typeof(define) === 'function' && define.amd) {
     });
 }
 
-function renderDocument(document, options, windowWidth, windowHeight, html2canvasIndex) {
+function renderDocument(document, options, windowWidth, windowHeight, html2canvasIndex, originalNode) {
     return createWindowClone(document, document, windowWidth, windowHeight, options, document.defaultView.pageXOffset, document.defaultView.pageYOffset).then(function(container) {
         log("Document cloned");
         var attributeName = html2canvasNodeAttribute + html2canvasIndex;
         var selector = "[" + attributeName + "='" + html2canvasIndex + "']";
-        document.querySelector(selector).removeAttribute(attributeName);
+        originalNode.removeAttribute(attributeName);
         var clonedWindow = container.contentWindow;
-        var node = clonedWindow.document.querySelector(selector);
+        var node = originalNode;
         var oncloneHandler = (typeof(options.onclone) === "function") ? Promise.resolve(options.onclone(clonedWindow.document)) : Promise.resolve(true);
         return oncloneHandler.then(function() {
             return renderWindow(node, container, options, windowWidth, windowHeight);
@@ -127,7 +127,7 @@ function crop(canvas, bounds) {
     var height = y2-y1;
     log("Cropping canvas at:", "left:", bounds.left, "top:", bounds.top, "width:", width, "height:", height);
     log("Resulting crop with width", bounds.width, "and height", bounds.height, "with x", x1, "and y", y1);
-    croppedCanvas.getContext("2d").drawImage(canvas, x1, y1, width, height, bounds.x, bounds.y, width, height);
+    croppedCanvas.getContext("2d").drawImage(canvas, x1, y1, width, height, parseInt(bounds.x), parseInt(bounds.y), width, height);
     return croppedCanvas;
 }
 

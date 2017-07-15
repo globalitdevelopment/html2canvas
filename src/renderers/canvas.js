@@ -62,9 +62,21 @@ CanvasRenderer.prototype.taints = function(imageContainer) {
 };
 
 CanvasRenderer.prototype.drawImage = function(imageContainer, sx, sy, sw, sh, dx, dy, dw, dh) {
-    if (!this.taints(imageContainer) || this.options.allowTaint) {
-        this.ctx.drawImage(imageContainer.image, sx, sy, sw, sh, dx, dy, dw, dh);
-    }
+     if (!this.taints(imageContainer) || this.options.allowTaint) {
+        try{
+            var image = new Image();
+            image.crossOrigin = "Anonymous";
+            image.src = imageContainer.image.src;
+            var ctx = this.ctx;
+            image.onload = function(){
+              var img = image;
+              ctx.drawImage(img, dx, dy-20, dw, dh);
+            }
+        }catch(e){
+          log(e);
+        }      
+
+     }
 };
 
 CanvasRenderer.prototype.clip = function(shapes, callback, context) {

@@ -65,7 +65,7 @@ ImageLoader.prototype.loadImage = function(imageData) {
         } else if (src.match(/data:image\/.*;base64,/i)) {
             return new ImageContainer(src.replace(/url\(['"]{0,}|['"]{0,}\)$/ig, ''), false);
         } else if (this.isSameOrigin(src) || this.options.allowTaint === true || this.isSVG(src)) {
-            return new ImageContainer(src, false);
+            return new ImageContainer(src, true);
         } else if (this.support.cors && !this.options.allowTaint && this.options.useCORS) {
             return new ImageContainer(src, true);
         } else if (this.options.proxy) {
