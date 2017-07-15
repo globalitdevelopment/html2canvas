@@ -1370,10 +1370,12 @@ ImageLoader.prototype.getPromise = function(container) {
 };
 
 ImageLoader.prototype.get = function(src) {
-    var found = null;
-    return this.images.some(function(img) {
-        return (found = img).src === src;
-    }) ? found : null;
+  var found = null;
+  for(var x in this.images){
+    if(this.images[x].src.trim() == src.trim()){
+      return this.images[x];
+    }
+  }
 };
 
 ImageLoader.prototype.fetch = function(nodes) {
@@ -2030,6 +2032,9 @@ NodeParser.prototype.newStackingContext = function(container, hasOwnStacking) {
     var stack = new StackingContext(hasOwnStacking, container.getOpacity(), container.node, container.parent);
     container.cloneTo(stack);
     var parentStack = hasOwnStacking ? stack.getParentStack(this) : stack.parent.stack;
+    if(!parentStack){
+      parentStack = stack;
+    }
     parentStack.contexts.push(stack);
     container.stack = stack;
 };
