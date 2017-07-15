@@ -117,10 +117,12 @@ ImageLoader.prototype.getPromise = function(container) {
 };
 
 ImageLoader.prototype.get = function(src) {
-    var found = null;
-    return this.images.some(function(img) {
-        return (found = img).src === src;
-    }) ? found : null;
+  var found = null;
+  for(var x in this.images){
+    if(this.images[x].src.trim() == src.trim()){
+      return this.images[x];
+    }
+  }
 };
 
 ImageLoader.prototype.fetch = function(nodes) {
